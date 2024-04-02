@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   RouteProp,
@@ -6,7 +6,12 @@ import {
   ParamListBase,
 } from '@react-navigation/native';
 
+import ExpenseList from '../components/ExpenseList';
+import ExpenseStatus from '../components/ExpenseStatus';
+
 import COLORS from '../styles/colors';
+import DUMMY_EXPENSES from '../data/dummy';
+import { IExpense } from '../types';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -14,18 +19,30 @@ interface IProps {
 }
 
 const AllExpenseScreen = (props: IProps) => {
-  return <View style={styles.container}>
-    <Text>List of all expenses.</Text>
-  </View>
+  const sortedExpenses = [...DUMMY_EXPENSES];
+  sortedExpenses.sort((a: IExpense, b: IExpense) => {
+    return b.date.valueOf() - a.date.valueOf();
+  });
+  const totalExpenses = sortedExpenses.reduce(
+    (prev, cur) => prev + cur.amount,
+    0
+  );
+  const expensePressHandler = (id: string) => {
+    props.navigation.navigate('AddExpense', { expenseId: id });
+  };
+  return (
+    <View style={styles.container}>
+      <ExpenseStatus title='Total expenses' total={totalExpenses} />
+      <ExpenseList expenses={sortedExpenses} onPress={expensePressHandler} />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: COLORS.bg500,
-  }
-})
+  },
+});
 
 export default AllExpenseScreen;

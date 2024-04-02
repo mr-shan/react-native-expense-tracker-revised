@@ -17,9 +17,10 @@ const BottomTabsNavigation = () => {
   return (
     <BottomTabs.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: COLORS.primary500 },
-        tabBarStyle: { backgroundColor: COLORS.bg300 },
+        headerStyle: { backgroundColor: COLORS.primary300 },
+        tabBarStyle: { backgroundColor: COLORS.bg300, },
         tabBarActiveTintColor: COLORS.primary500,
+        tabBarLabelStyle: { fontSize: 12, },
       }}
     >
       <BottomTabs.Screen

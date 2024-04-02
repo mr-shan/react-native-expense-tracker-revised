@@ -1,15 +1,19 @@
 const COLORS = {
   primary300: '#cfa200',
-  primary500: '#ffc800',
-  primary700: '#ffd439',
+  primary500: '#FFC501',
+  primary700: '#fad54f',
 
-  secondary300: '#59a8e0',
-  secondary500: '#60bdff',
-  secondary700: '#99d4fe',
+  secondary300: '#034877',
+  secondary500: '#1071b2',
+  secondary700: '#2b92d7',
 
-  bg300: '#222222',
-  bg500: '#454545',
-  bg700: '#666',
+  accent300: '#82002d',
+  accent500: '#BC0E4C',
+  accent700: '#e03873',
+
+  bg300: '#1e262b',
+  bg500: '#354F60',
+  bg700: '#496f88',
 
   text300: '#aaa',
   text500: '#ddd',
