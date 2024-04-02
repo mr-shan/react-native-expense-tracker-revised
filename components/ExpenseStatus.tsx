@@ -29,12 +29,12 @@ const styles = StyleSheet.create({
     borderColor: COLORS.bg700,
   },
   title: {
-    color: COLORS.text700,
+    color: COLORS.text500,
     fontSize: 16,
     fontWeight: 'bold'
   },
   total: {
-    color: COLORS.primary700,
+    color: COLORS.primary500,
     fontSize: 18,
     fontWeight: 'bold'
   },

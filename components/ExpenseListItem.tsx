@@ -54,12 +54,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    color: COLORS.primary500,
+    color: COLORS.text500,
     fontWeight: '500',
   },
   date: {
     fontSize: 14,
-    color: COLORS.text500,
+    color: COLORS.text300,
   },
   amountWrapper: {
     backgroundColor: COLORS.secondary500,

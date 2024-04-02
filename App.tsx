@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,6 +10,7 @@ import AllExpenseScreen from './screens/AllExpenseScreen';
 import AddExpenseScreen from './screens/AddExpenseScreen';
 
 import COLORS from './styles/colors';
+import { Pressable } from 'react-native';
 
 const RootStack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -17,10 +19,11 @@ const BottomTabsNavigation = () => {
   return (
     <BottomTabs.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: COLORS.primary300 },
-        tabBarStyle: { backgroundColor: COLORS.bg300, },
+        headerStyle: { backgroundColor: COLORS.bg300 },
+        tabBarStyle: { backgroundColor: COLORS.bg300 },
         tabBarActiveTintColor: COLORS.primary500,
-        tabBarLabelStyle: { fontSize: 12, },
+        tabBarLabelStyle: { fontSize: 12 },
+        headerTintColor: COLORS.primary500,
       }}
     >
       <BottomTabs.Screen
@@ -35,6 +38,29 @@ const BottomTabsNavigation = () => {
               color={props.color}
             />
           ),
+        }}
+      />
+      <BottomTabs.Screen
+        component={AddExpenseScreen}
+        name='AddExpenseModal'
+        options={(props) => {
+          return {
+            tabBarButton: () => (
+              <Pressable
+                style={{
+                  backgroundColor: COLORS.secondary700,
+                  borderRadius: 50,
+                  width: 60,
+                  height: 60,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => props.navigation.navigate('AddExpense')}
+              >
+                <Ionicons name='add' size={40} color={COLORS.text700} />
+              </Pressable>
+            ),
+          };
         }}
       />
       <BottomTabs.Screen
@@ -57,17 +83,31 @@ const BottomTabsNavigation = () => {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <RootStack.Navigator>
-        <RootStack.Screen
-          component={BottomTabsNavigation}
-          name='TabsNavigation'
-          options={{
-            headerShown: false,
+    <>
+      <StatusBar style='light' />
+      <NavigationContainer>
+        <RootStack.Navigator
+          screenOptions={{
+            headerStyle: { backgroundColor: COLORS.bg500 },
+            headerTintColor: 'white',
           }}
-        />
-        <RootStack.Screen component={AddExpenseScreen} name='AddExpense' />
-      </RootStack.Navigator>
-    </NavigationContainer>
+        >
+          <RootStack.Screen
+            component={BottomTabsNavigation}
+            name='TabsNavigation'
+            options={{
+              headerShown: false,
+            }}
+          />
+          <RootStack.Screen
+            component={AddExpenseScreen}
+            name='AddExpense'
+            options={{
+              presentation: 'modal',
+            }}
+          />
+        </RootStack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
