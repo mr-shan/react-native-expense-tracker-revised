@@ -1,4 +1,4 @@
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../styles/colors';
 
@@ -8,19 +8,31 @@ interface IProps {
 
 const TabBarAddButton = (props: IProps) => {
   return (
-    <Pressable
+    <View
       style={{
-        backgroundColor: COLORS.accent500,
-        borderRadius: 50,
-        width: 60,
-        height: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // borderWidth: 2,
+        // borderColor: 'yellow',
+        position: 'relative',
+        width: 65,
+        height: 65,
       }}
-      onPress={props.onPress}
     >
-      <Ionicons name='add' size={40} color={COLORS.text700} />
-    </Pressable>
+      <Pressable
+        style={{
+          backgroundColor: COLORS.primary500,
+          borderRadius: 50,
+          width: 60,
+          height: 60,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          bottom: 12,
+        }}
+        onPress={props.onPress}
+      >
+        <Ionicons name='add' size={40} color={COLORS.bg300} />
+      </Pressable>
+    </View>
   );
 };
 
