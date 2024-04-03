@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-    gap: 5,
+    gap: 8,
   },
   title: {
     fontSize: 18,

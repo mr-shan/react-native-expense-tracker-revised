@@ -10,8 +10,6 @@ const TabBarAddButton = (props: IProps) => {
   return (
     <View
       style={{
-        // borderWidth: 2,
-        // borderColor: 'yellow',
         position: 'relative',
         width: 65,
         height: 65,

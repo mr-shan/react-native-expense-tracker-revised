@@ -9,7 +9,7 @@ const COLORS = {
 
   accent300: '#82002d',
   accent500: '#BC0E4C',
-  accent700: '#ff0059',
+  accent700: '#fb1d6b',
   accent900: '#ff6a9e',
 
   bg300: '#1a2024',

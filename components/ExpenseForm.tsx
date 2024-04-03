@@ -14,38 +14,83 @@ interface IProps {
 
 const ExpenseForm = (props: IProps) => {
   const [inputs, setInputs] = useState({
-    amount: '',
-    date: '',
-    name: '',
-    description: '',
+    amount: { value: '', isValid: true },
+    date: { value: '', isValid: true },
+    name: { value: '', isValid: true },
+    description: { value: '', isValid: true },
   });
 
   useEffect(() => {
     if (props.expenseData) {
       setInputs({
-        amount: props.expenseData.amount.toString(),
-        date: formatDate(props.expenseData.date),
-        name: props.expenseData.name,
-        description: props.expenseData.description || '',
+        amount: { value: props.expenseData.amount.toString(), isValid: true },
+        date: { value: formatDate(props.expenseData.date), isValid: true },
+        name: { value: props.expenseData.name, isValid: true },
+        description: {
+          value: props.expenseData.description || '',
+          isValid: true,
+        },
       });
     }
   }, []);
 
   const submitHandler = () => {
     if (props.mode === 'edit' && !props.expenseData) return;
+
+    const isNameValid = inputs.name.value.trim().length > 0;
+    const isAmountValid = parseFloat(inputs.amount.value) > 0;
+    const isDateValid =
+      new Date(inputs.date.value).toString() !== 'Invalid Date';
     
-    const expense: IExpense = {
-      id: props.mode === 'new' ? Date.now().toString() : props.expenseData.id,
-      name: inputs.name,
-      amount: parseFloat(inputs.amount),
-      date: new Date(inputs.date),
-      description: inputs.description
+    if (!isNameValid) {
+      setInputs((oldState) => ({
+        ...oldState,
+        name: { value: oldState.name.value, isValid: false },
+      }));
     }
-    props.onSubmit(expense)
+
+    if (!isAmountValid) {
+      setInputs((oldState) => ({
+        ...oldState,
+        amount: { value: oldState.amount.value, isValid: false },
+      }));
+    }
+
+    if (!isDateValid) {
+      setInputs((oldState) => ({
+        ...oldState,
+        date: { value: oldState.date.value, isValid: false },
+      }));
+    }
+
+    if (!(isNameValid && isAmountValid && isDateValid)) return;
+
+    const expense: IExpense = {
+      id:
+        props.mode === 'new'
+          ? Date.now().toString()
+          : props?.expenseData?.id || '',
+      name: inputs.name.value,
+      amount: parseFloat(inputs.amount.value),
+      date: new Date(inputs.date.value),
+      description: inputs.description.value,
+    };
+    props.onSubmit(expense);
   };
 
-  const inputChangeHandler = (type: string, value: string) => {
-    setInputs((oldValue) => ({ ...oldValue, [type]: value }));
+  const inputChangeHandler = (
+    type: 'amount' | 'name' | 'description' | 'date',
+    value: string
+  ) => {
+    setInputs((oldState) => {
+      const modifiedInput = oldState[type];
+      modifiedInput.value = value;
+      modifiedInput.isValid = true;
+      return {
+        ...oldState,
+        modifiedInput,
+      };
+    });
   };
 
   const formatDate = (date: Date) => {
@@ -57,37 +102,41 @@ const ExpenseForm = (props: IProps) => {
   return (
     <View style={styles.container}>
       <Input
-        inputProps={{ value: inputs.name }}
+        inputProps={{ value: inputs.name.value }}
         label='Name'
+        isValid={inputs.name.isValid}
         onChange={inputChangeHandler.bind(this, 'name')}
       />
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Input
           label='Amount'
+          isValid={inputs.amount.isValid}
           containerStyle={{ flex: 1 }}
           inputProps={{
             keyboardType: 'decimal-pad',
             placeholder: '99.99',
-            value: inputs.amount,
+            value: inputs.amount.value,
           }}
           onChange={inputChangeHandler.bind(this, 'amount')}
         />
         <Input
           label='Date'
+          isValid={inputs.date.isValid}
           containerStyle={{ flex: 1 }}
           inputProps={{
             placeholder: 'YYYY-MM-DD',
             maxLength: 10,
-            value: inputs.date,
+            value: inputs.date.value,
           }}
           onChange={inputChangeHandler.bind(this, 'date')}
         />
       </View>
       <Input
         label='Description'
+        isValid={inputs.description.isValid}
         inputProps={{
           multiline: true,
-          value: inputs.description,
+          value: inputs.description.value,
         }}
         inputStyle={{
           textAlignVertical: 'top',

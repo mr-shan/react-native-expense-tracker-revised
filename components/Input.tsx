@@ -14,17 +14,18 @@ interface IProps {
   inputProps?: TextInputProps;
   inputStyle?: TextStyle,
   containerStyle?: ViewStyle;
+  isValid?: boolean
   onChange: (text: string) => void;
 }
 
 const Input = (props: IProps) => {
   return (
     <View style={[styles.container, props.containerStyle]}>
-      <Text style={styles.label}>{props.label}</Text>
+      <Text style={[styles.label, !props.isValid && styles.invalidText]}>{props.label}</Text>
       <TextInput
         {...props.inputProps}
         placeholderTextColor={COLORS.text200}
-        style={[styles.input, props.inputStyle]}
+        style={[styles.input, props.inputStyle, !props.isValid && styles.invalidInput]}
         onChangeText={props.onChange}
       />
     </View>
@@ -45,8 +46,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 10,
     color: COLORS.text700,
-    fontSize: 18
+    fontSize: 18,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
+  invalidText: {
+    color: COLORS.accent700
+  },
+  invalidInput: {
+    borderWidth: 1,
+    borderColor: COLORS.accent500,
+  }
 });
 
 export default Input;
