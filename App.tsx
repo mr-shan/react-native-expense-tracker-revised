@@ -9,8 +9,11 @@ import RecentExpenseScreen from './screens/RecentExpenseScreen';
 import AllExpenseScreen from './screens/AllExpenseScreen';
 import AddExpenseScreen from './screens/AddExpenseScreen';
 
+import TabBarAddButton from './components/TabBarAddButton';
+
+import { ExpenseProvider } from './store';
+
 import COLORS from './styles/colors';
-import { Pressable } from 'react-native';
 
 const RootStack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -20,7 +23,11 @@ const BottomTabsNavigation = () => {
     <BottomTabs.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: COLORS.bg300 },
-        tabBarStyle: { backgroundColor: COLORS.bg300 },
+        tabBarStyle: {
+          backgroundColor: COLORS.bg300,
+          minHeight: 60,
+          borderTopColor: 'transparent',
+        },
         tabBarActiveTintColor: COLORS.primary500,
         tabBarLabelStyle: { fontSize: 12 },
         headerTintColor: COLORS.primary500,
@@ -30,7 +37,7 @@ const BottomTabsNavigation = () => {
         component={RecentExpenseScreen}
         name='RecentExpenses'
         options={{
-          title: 'Recent Expenses',
+          title: 'Recent Expenses',          
           tabBarIcon: (props) => (
             <Ionicons
               name={props.focused ? 'timer' : 'timer-outline'}
@@ -46,19 +53,9 @@ const BottomTabsNavigation = () => {
         options={(props) => {
           return {
             tabBarButton: () => (
-              <Pressable
-                style={{
-                  backgroundColor: COLORS.secondary700,
-                  borderRadius: 50,
-                  width: 60,
-                  height: 60,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
+              <TabBarAddButton
                 onPress={() => props.navigation.navigate('AddExpense')}
-              >
-                <Ionicons name='add' size={40} color={COLORS.text700} />
-              </Pressable>
+              />
             ),
           };
         }}
@@ -83,13 +80,13 @@ const BottomTabsNavigation = () => {
 
 export default function App() {
   return (
-    <>
+    <ExpenseProvider>
       <StatusBar style='light' />
       <NavigationContainer>
         <RootStack.Navigator
           screenOptions={{
             headerStyle: { backgroundColor: COLORS.bg500 },
-            headerTintColor: 'white',
+            headerTintColor: COLORS.text700,
           }}
         >
           <RootStack.Screen
@@ -108,6 +105,6 @@ export default function App() {
           />
         </RootStack.Navigator>
       </NavigationContainer>
-    </>
+    </ExpenseProvider>
   );
 }

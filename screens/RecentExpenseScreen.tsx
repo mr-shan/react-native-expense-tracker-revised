@@ -10,8 +10,8 @@ import ExpenseList from '../components/ExpenseList';
 import ExpenseStatus from '../components/ExpenseStatus';
 
 import COLORS from '../styles/colors';
-import DUMMY_EXPENSES from '../data/dummy';
 import { IExpense } from '../types';
+import { useExpense } from '../store';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -19,10 +19,12 @@ interface IProps {
 }
 
 const RecentExpenseScreen = (props: IProps) => {
+  const { state, dispatch } = useExpense();
+
   const today = new Date(); // Get today's date
   const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const sortedExpenses = DUMMY_EXPENSES.filter(
+  const sortedExpenses = state.expenses.filter(
     (e) => e.date.valueOf() > sevenDaysAgo.valueOf()
   );
 
