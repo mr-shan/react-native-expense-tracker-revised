@@ -29,7 +29,8 @@ const GenericButton = (props: IProps) => {
   const textStyle: TextStyle = {
     color: '',
     fontSize: 16,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontWeight: 'bold',
   };
 
   if (props.size === 'small') {

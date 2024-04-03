@@ -34,6 +34,14 @@ const expenseReducer = (state: State, action: Action): State => {
         ...state,
         expenses: state.expenses.filter(expense => expense.id !== action.payload)
       };
+    case 'MODIFY_EXPENSE':
+      const oldStateExpenses = [ ...state.expenses ];
+      const index = oldStateExpenses.findIndex(item => item.id === action.payload.id);
+      oldStateExpenses[index] = { ...oldStateExpenses[index], ...action.payload };
+      return {
+        ...state,
+        expenses: oldStateExpenses
+      }
     default:
       return state;
   }

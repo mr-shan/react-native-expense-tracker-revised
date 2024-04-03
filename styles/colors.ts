@@ -1,7 +1,7 @@
 const COLORS = {
-  primary300: '#cfa200',
-  primary500: '#FFC501',
-  primary700: '#fad54f',
+  primary300: '#b89000',
+  primary500: '#e1a900',
+  primary700: '#ffc800',
 
   secondary300: '#114051',
   secondary500: '#125b76',
@@ -16,6 +16,7 @@ const COLORS = {
   bg500: '#22333e',
   bg700: '#314654',
 
+  text200: '#777',
   text300: '#aaa',
   text500: '#ddd',
   text700: '#fff',

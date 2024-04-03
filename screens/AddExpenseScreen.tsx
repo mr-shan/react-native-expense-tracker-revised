@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import {
@@ -12,6 +12,8 @@ import COLORS from '../styles/colors';
 import { useExpense } from '../store';
 
 import GenericButton from '../components/GenericButton';
+import { IExpense } from '../types';
+import ExpenseForm from '../components/ExpenseForm';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -23,10 +25,10 @@ const AddExpenseScreen = (props: IProps) => {
   const expenseId = props.route.params?.expenseId;
   const mode = expenseId ? 'edit' : 'new';
 
-  let expenseData = null;
+  let expenseData: IExpense | null = null;
   if (expenseId) {
-    expenseData = state.expenses.find(expense => expense.id === expenseId);
-    console.log(expenseData)
+    expenseData =
+      state.expenses.find((expense) => expense.id === expenseId) || null;
   }
 
   useLayoutEffect(() => {
@@ -35,42 +37,39 @@ const AddExpenseScreen = (props: IProps) => {
     });
   }, []);
 
-  const buttonTitle = mode === 'edit' ? 'Save' : 'Add';
-    
   const goBack = () => {
     props.navigation.goBack();
   };
   const deleteExpenseHandler = () => {
-    dispatch({ type: 'REMOVE_EXPENSE', payload: expenseId })
-    goBack()
+    dispatch({ type: 'REMOVE_EXPENSE', payload: expenseId });
+    goBack();
   };
-  const saveExpenseHandler = () => {
-    goBack()
+  const saveExpenseHandler = (expenseData: IExpense) => {
+    if (mode === 'new') {
+      dispatch({ type: 'ADD_EXPENSE', payload: expenseData });
+    } else {
+      dispatch({ type: 'MODIFY_EXPENSE', payload: expenseData });
+    }
+    goBack();
   };
-  
+
   return (
     <View style={styles.container}>
-      <View style={styles.buttonsWrapper}>
+      <ExpenseForm
+        expenseData={expenseData}
+        onSubmit={saveExpenseHandler}
+        onCancel={goBack}
+        mode={mode}
+      />
+      {mode === 'edit' && (
         <GenericButton
-          style={{ flex: 1 }}
-          onPress={goBack}
-          title='Cancel'
-          type='outlined'
-        />
-        <GenericButton
-          style={{ flex: 1 }}
-          onPress={saveExpenseHandler}
-          title={buttonTitle}
-          type='primary'
-        />
-      </View>
-      <GenericButton
-        style={{ marginTop: 10 }}
-        onPress={deleteExpenseHandler}
-        type='icon'
-      >
-        <Ionicons name='trash' size={40} color={COLORS.accent700} />
-      </GenericButton>
+          style={{ marginTop: 10 }}
+          onPress={deleteExpenseHandler}
+          type='icon'
+        >
+          <Ionicons name='trash' size={40} color={COLORS.accent700} />
+        </GenericButton>
+      )}
     </View>
   );
 };
@@ -78,14 +77,10 @@ const AddExpenseScreen = (props: IProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 20,
     backgroundColor: COLORS.bg300,
-    alignItems: 'center',
-  },
-  buttonsWrapper: {
-    flexDirection: 'row',
-    gap: 20,
+    paddingTop: 30,
   },
 });
 

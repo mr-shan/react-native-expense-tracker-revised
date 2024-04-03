@@ -101,6 +101,8 @@ export default function App() {
             name='AddExpense'
             options={{
               presentation: 'modal',
+              headerStyle: { backgroundColor: COLORS.primary500 },
+              headerTintColor: COLORS.bg300
             }}
           />
         </RootStack.Navigator>

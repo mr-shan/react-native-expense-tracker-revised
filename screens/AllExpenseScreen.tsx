@@ -12,6 +12,7 @@ import ExpenseStatus from '../components/ExpenseStatus';
 import COLORS from '../styles/colors';
 import DUMMY_EXPENSES from '../data/dummy';
 import { IExpense } from '../types';
+import { useExpense } from '../store';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -19,7 +20,10 @@ interface IProps {
 }
 
 const AllExpenseScreen = (props: IProps) => {
-  const sortedExpenses = [...DUMMY_EXPENSES];
+  const { state, dispatch } = useExpense();
+
+  const sortedExpenses = [...state.expenses];
+  
   sortedExpenses.sort((a: IExpense, b: IExpense) => {
     return b.date.valueOf() - a.date.valueOf();
   });
