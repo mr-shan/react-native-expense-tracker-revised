@@ -1,4 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
 import {
   RouteProp,
@@ -12,6 +13,8 @@ import ExpenseStatus from '../components/ExpenseStatus';
 import COLORS from '../styles/colors';
 import { IExpense } from '../types';
 import { useExpense } from '../store';
+import { fetchAllExpenses } from '../utils/http';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -20,6 +23,7 @@ interface IProps {
 
 const RecentExpenseScreen = (props: IProps) => {
   const { state, dispatch } = useExpense();
+  const [isLoading, setIsLoading] = useState(true);
 
   const today = new Date(); // Get today's date
   const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -41,6 +45,32 @@ const RecentExpenseScreen = (props: IProps) => {
     props.navigation.navigate('AddExpense', { expenseId: id });
   };
 
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await fetchAllExpenses();
+        if (res.isError || !res.expenses) return;
+        dispatch({ type: 'SET_EXPENSES', payload: res.expenses });
+      } catch (error) {
+        console.error(error);
+      }
+      setIsLoading(false);
+    };
+    fetchExpenses();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingOverlay />
+  }
+  
+  if (sortedExpenses.length === 0 && !isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.noExpenseText}>No expenses found!</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ExpenseStatus title='Last 7 days' total={totalExpenses} />
@@ -53,6 +83,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.bg500,
+  },
+  noExpenseText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    fontSize: 16,
+    color: COLORS.text500,
   },
 });
 

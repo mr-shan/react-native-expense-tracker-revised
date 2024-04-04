@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import {
@@ -7,13 +7,19 @@ import {
   ParamListBase,
 } from '@react-navigation/native';
 
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import COLORS from '../styles/colors';
 import { useExpense } from '../store';
 
 import GenericButton from '../components/GenericButton';
 import { IExpense } from '../types';
 import ExpenseForm from '../components/ExpenseForm';
+import {
+  deleteExpense,
+  modifyExistingExpense,
+  postNewExpense,
+} from '../utils/http';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -22,6 +28,7 @@ interface IProps {
 
 const AddExpenseScreen = (props: IProps) => {
   const { state, dispatch } = useExpense();
+  const [isLoading, setIsLoading] = useState(false);
   const expenseId = props.route.params?.expenseId;
   const mode = expenseId ? 'edit' : 'new';
 
@@ -40,18 +47,34 @@ const AddExpenseScreen = (props: IProps) => {
   const goBack = () => {
     props.navigation.goBack();
   };
-  const deleteExpenseHandler = () => {
+  const deleteExpenseHandler = async () => {
+    setIsLoading(true);
+    const response = await deleteExpense(expenseId);
+    if (response.isError) return;
     dispatch({ type: 'REMOVE_EXPENSE', payload: expenseId });
     goBack();
   };
-  const saveExpenseHandler = (expenseData: IExpense) => {
+  const saveExpenseHandler = async (expenseData: IExpense) => {
+    setIsLoading(true);
     if (mode === 'new') {
-      dispatch({ type: 'ADD_EXPENSE', payload: expenseData });
+      const response = await postNewExpense(expenseData);
+      if (response.isError || !response.id) return;
+      dispatch({
+        type: 'ADD_EXPENSE',
+        payload: { ...expenseData, id: response.id },
+      });
     } else {
+      const response = await modifyExistingExpense(expenseData.id, expenseData);
+      if (response.isError) return;
       dispatch({ type: 'MODIFY_EXPENSE', payload: expenseData });
     }
+    setIsLoading(false);
     goBack();
   };
+
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <View style={styles.container}>

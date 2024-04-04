@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 import {
   RouteProp,
@@ -10,9 +10,11 @@ import ExpenseList from '../components/ExpenseList';
 import ExpenseStatus from '../components/ExpenseStatus';
 
 import COLORS from '../styles/colors';
-import DUMMY_EXPENSES from '../data/dummy';
 import { IExpense } from '../types';
 import { useExpense } from '../store';
+import { useEffect, useState } from 'react';
+import { fetchAllExpenses } from '../utils/http';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -21,6 +23,7 @@ interface IProps {
 
 const AllExpenseScreen = (props: IProps) => {
   const { state, dispatch } = useExpense();
+  const [isLoading, setIsLoading] = useState(true);
 
   const sortedExpenses = [...state.expenses];
   
@@ -34,6 +37,32 @@ const AllExpenseScreen = (props: IProps) => {
   const expensePressHandler = (id: string) => {
     props.navigation.navigate('AddExpense', { expenseId: id });
   };
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await fetchAllExpenses();
+        if (res.isError || !res.expenses) return;        
+        dispatch({ type: 'SET_EXPENSES', payload: res.expenses })
+      } catch (error) {
+        console.error(error)   
+      }
+      setIsLoading(false);
+    }
+    fetchExpenses()
+  }, [])
+
+  if (isLoading) {
+    return <LoadingOverlay />
+  }
+
+  if (sortedExpenses.length === 0 && !isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.noExpenseText}>No expenses found!</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ExpenseStatus title='Total expenses' total={totalExpenses} />
@@ -46,6 +75,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.bg500,
+  },
+  noExpenseText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    fontSize: 16,
+    color: COLORS.text500,
   },
 });
 

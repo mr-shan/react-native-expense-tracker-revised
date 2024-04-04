@@ -2,7 +2,6 @@
 import { createContext, useContext, useReducer, FC, ReactNode } from 'react';
 
 import { IExpense } from '../types';
-import DUMMY_EXPENSES from '../data/dummy';
 
 interface State {
   expenses: IExpense[];
@@ -12,9 +11,10 @@ type Action =
   | { type: 'ADD_EXPENSE'; payload: IExpense }
   | { type: 'REMOVE_EXPENSE'; payload: string }
   | { type: 'MODIFY_EXPENSE'; payload: IExpense }
+  | { type: 'SET_EXPENSES'; payload: IExpense[] }
 
 const initialState: State = {
-  expenses: DUMMY_EXPENSES
+  expenses: []
 };
 
 const ExpenseContext = createContext<{ state: State; dispatch: React.Dispatch<Action> }>({
@@ -42,6 +42,12 @@ const expenseReducer = (state: State, action: Action): State => {
         ...state,
         expenses: oldStateExpenses
       }
+    case 'SET_EXPENSES':
+      return {
+        ...state,
+        expenses: action.payload,
+      }
+
     default:
       return state;
   }
