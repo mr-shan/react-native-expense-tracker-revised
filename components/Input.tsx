@@ -25,6 +25,7 @@ const Input = (props: IProps) => {
       <TextInput
         {...props.inputProps}
         placeholderTextColor={COLORS.text200}
+        keyboardAppearance='dark'
         style={[styles.input, props.inputStyle, !props.isValid && styles.invalidInput]}
         onChangeText={props.onChange}
       />

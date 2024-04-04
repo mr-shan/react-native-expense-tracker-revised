@@ -1,4 +1,9 @@
-import { StyleSheet, View } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import {
@@ -30,7 +35,7 @@ interface IProps {
 const AddExpenseScreen = (props: IProps) => {
   const { state, dispatch } = useExpense();
   const [isLoading, setIsLoading] = useState(false);
-  const [isError,  setIsError] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const expenseId = props.route.params?.expenseId;
   const mode = expenseId ? 'edit' : 'new';
@@ -61,12 +66,12 @@ const AddExpenseScreen = (props: IProps) => {
     setIsLoading(true);
     if (mode === 'new') {
       const response = await postNewExpense(expenseData);
-      console.log(response)
+      console.log(response);
       if (response.isError || !response.id) {
         setIsError(true);
         setIsLoading(false);
         return;
-      };
+      }
       dispatch({
         type: 'ADD_EXPENSE',
         payload: { ...expenseData, id: response.id },
@@ -84,8 +89,8 @@ const AddExpenseScreen = (props: IProps) => {
     goBack();
   };
   const closeError = () => {
-    setIsError(false)
-  }
+    setIsError(false);
+  };
 
   return (
     <>
@@ -97,23 +102,25 @@ const AddExpenseScreen = (props: IProps) => {
           onClose={closeError}
         />
       )}
-      <View style={styles.container}>
-        <ExpenseForm
-          expenseData={expenseData}
-          onSubmit={saveExpenseHandler}
-          onCancel={goBack}
-          mode={mode}
-        />
-        {mode === 'edit' && (
-          <GenericButton
-            style={{ marginTop: 10 }}
-            onPress={deleteExpenseHandler}
-            type='icon'
-          >
-            <Ionicons name='trash' size={40} color={COLORS.accent700} />
-          </GenericButton>
-        )}
-      </View>
+      <ScrollView style={styles.container}>
+        <KeyboardAvoidingView behavior='position'>
+          <ExpenseForm
+            expenseData={expenseData}
+            onSubmit={saveExpenseHandler}
+            onCancel={goBack}
+            mode={mode}
+          />
+          {mode === 'edit' && (
+            <GenericButton
+              style={{ marginTop: 10 }}
+              onPress={deleteExpenseHandler}
+              type='icon'
+            >
+              <Ionicons name='trash' size={40} color={COLORS.accent700} />
+            </GenericButton>
+          )}
+        </KeyboardAvoidingView>
+      </ScrollView>
     </>
   );
 };
