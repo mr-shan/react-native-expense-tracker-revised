@@ -38,11 +38,11 @@ export const postNewExpense = async (
   try {
     const payload = { ...expense, id: null };
     const response = await axios.post(BASE_URL + '/' + DB_NAME, payload);
-    console.log(response.data);
+    if (response.status !== 200) throw new Error(response.data || response.statusText)
     return { isError: false, id: response.data.name };
   } catch (error) {
     console.error(error);
-    return { isError: false, id: null };
+    return { isError: true, id: null };
   }
 };
 

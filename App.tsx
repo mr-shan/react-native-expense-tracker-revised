@@ -25,7 +25,7 @@ const BottomTabsNavigation = () => {
         headerStyle: { backgroundColor: COLORS.bg300 },
         tabBarStyle: {
           backgroundColor: COLORS.bg300,
-          minHeight: 60,
+          minHeight: 72,
           borderTopColor: 'transparent',
         },
         tabBarActiveTintColor: COLORS.text500,

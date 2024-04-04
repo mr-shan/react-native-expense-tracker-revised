@@ -15,6 +15,7 @@ import { IExpense } from '../types';
 import { useExpense } from '../store';
 import { fetchAllExpenses } from '../utils/http';
 import LoadingOverlay from '../components/LoadingOverlay';
+import ErrorOverlay from '../components/ErrorOverlay';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -24,6 +25,7 @@ interface IProps {
 const RecentExpenseScreen = (props: IProps) => {
   const { state, dispatch } = useExpense();
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const today = new Date(); // Get today's date
   const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -45,24 +47,29 @@ const RecentExpenseScreen = (props: IProps) => {
     props.navigation.navigate('AddExpense', { expenseId: id });
   };
 
+  const fetchExpenses = async () => {
+    try {
+      const res = await fetchAllExpenses();
+      if (res.isError || !res.expenses) {
+        setIsError(true);
+        setIsLoading(false);
+        return;
+      };
+      dispatch({ type: 'SET_EXPENSES', payload: res.expenses });
+    } catch (error) {
+      console.error(error);
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const res = await fetchAllExpenses();
-        if (res.isError || !res.expenses) return;
-        dispatch({ type: 'SET_EXPENSES', payload: res.expenses });
-      } catch (error) {
-        console.error(error);
-      }
-      setIsLoading(false);
-    };
     fetchExpenses();
   }, []);
 
-  if (isLoading) {
-    return <LoadingOverlay />
+  const closeError = () => {
+    setIsError(false)
   }
-  
+
   if (sortedExpenses.length === 0 && !isLoading) {
     return (
       <View style={styles.container}>
@@ -73,6 +80,14 @@ const RecentExpenseScreen = (props: IProps) => {
 
   return (
     <View style={styles.container}>
+      {isLoading && <LoadingOverlay />}
+      {isError && (
+        <ErrorOverlay
+          title='Something went wrong!'
+          message='Failed to fetch expenses, Please try again later.'
+          onClose={closeError}
+        />
+      )}
       <ExpenseStatus title='Last 7 days' total={totalExpenses} />
       <ExpenseList expenses={sortedExpenses} onPress={expensePressHandler} />
     </View>

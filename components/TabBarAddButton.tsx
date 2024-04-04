@@ -11,20 +11,25 @@ const TabBarAddButton = (props: IProps) => {
     <View
       style={{
         position: 'relative',
-        width: 65,
-        height: 65,
+        width: 70,
+        height: 70,
       }}
     >
       <Pressable
         style={{
           backgroundColor: COLORS.primary500,
           borderRadius: 50,
-          width: 60,
-          height: 60,
+          width: 65,
+          height: 65,
           justifyContent: 'center',
           alignItems: 'center',
           position: 'absolute',
           bottom: 12,
+          shadowColor: 'black',
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.8,
+          shadowRadius: 12,
+          elevation: 10,
         }}
         onPress={props.onPress}
       >

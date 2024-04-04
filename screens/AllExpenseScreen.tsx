@@ -15,6 +15,7 @@ import { useExpense } from '../store';
 import { useEffect, useState } from 'react';
 import { fetchAllExpenses } from '../utils/http';
 import LoadingOverlay from '../components/LoadingOverlay';
+import ErrorOverlay from '../components/ErrorOverlay';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -24,6 +25,7 @@ interface IProps {
 const AllExpenseScreen = (props: IProps) => {
   const { state, dispatch } = useExpense();
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const sortedExpenses = [...state.expenses];
   
@@ -41,7 +43,11 @@ const AllExpenseScreen = (props: IProps) => {
     const fetchExpenses = async () => {
       try {
         const res = await fetchAllExpenses();
-        if (res.isError || !res.expenses) return;        
+        if (res.isError || !res.expenses) {
+          setIsError(true);
+          setIsLoading(false);
+          return;
+        };        
         dispatch({ type: 'SET_EXPENSES', payload: res.expenses })
       } catch (error) {
         console.error(error)   
@@ -51,8 +57,8 @@ const AllExpenseScreen = (props: IProps) => {
     fetchExpenses()
   }, [])
 
-  if (isLoading) {
-    return <LoadingOverlay />
+  const closeError = () => {
+    setIsError(false)
   }
 
   if (sortedExpenses.length === 0 && !isLoading) {
@@ -65,6 +71,14 @@ const AllExpenseScreen = (props: IProps) => {
 
   return (
     <View style={styles.container}>
+      {isLoading && <LoadingOverlay />}
+      {isError && !isLoading && (
+        <ErrorOverlay
+          title='Something went wrong!'
+          message='Failed to fetch expenses, Please try again later.'
+          onClose={closeError}
+        />
+      )}
       <ExpenseStatus title='Total expenses' total={totalExpenses} />
       <ExpenseList expenses={sortedExpenses} onPress={expensePressHandler} />
     </View>

@@ -20,6 +20,7 @@ import {
   postNewExpense,
 } from '../utils/http';
 import LoadingOverlay from '../components/LoadingOverlay';
+import ErrorOverlay from '../components/ErrorOverlay';
 
 interface IProps {
   navigation: NavigationProp<ParamListBase>;
@@ -29,6 +30,8 @@ interface IProps {
 const AddExpenseScreen = (props: IProps) => {
   const { state, dispatch } = useExpense();
   const [isLoading, setIsLoading] = useState(false);
+  const [isError,  setIsError] = useState(false);
+
   const expenseId = props.route.params?.expenseId;
   const mode = expenseId ? 'edit' : 'new';
 
@@ -58,42 +61,60 @@ const AddExpenseScreen = (props: IProps) => {
     setIsLoading(true);
     if (mode === 'new') {
       const response = await postNewExpense(expenseData);
-      if (response.isError || !response.id) return;
+      console.log(response)
+      if (response.isError || !response.id) {
+        setIsError(true);
+        setIsLoading(false);
+        return;
+      };
       dispatch({
         type: 'ADD_EXPENSE',
         payload: { ...expenseData, id: response.id },
       });
     } else {
       const response = await modifyExistingExpense(expenseData.id, expenseData);
-      if (response.isError) return;
+      if (response.isError) {
+        setIsError(true);
+        setIsLoading(false);
+        return;
+      }
       dispatch({ type: 'MODIFY_EXPENSE', payload: expenseData });
     }
     setIsLoading(false);
     goBack();
   };
-
-  if (isLoading) {
-    return <LoadingOverlay />;
+  const closeError = () => {
+    setIsError(false)
   }
 
   return (
-    <View style={styles.container}>
-      <ExpenseForm
-        expenseData={expenseData}
-        onSubmit={saveExpenseHandler}
-        onCancel={goBack}
-        mode={mode}
-      />
-      {mode === 'edit' && (
-        <GenericButton
-          style={{ marginTop: 10 }}
-          onPress={deleteExpenseHandler}
-          type='icon'
-        >
-          <Ionicons name='trash' size={40} color={COLORS.accent700} />
-        </GenericButton>
+    <>
+      {isLoading && <LoadingOverlay />}
+      {isError && !isLoading && (
+        <ErrorOverlay
+          title='Something went wrong!'
+          message='Failed to save expense details, Please try again later.'
+          onClose={closeError}
+        />
       )}
-    </View>
+      <View style={styles.container}>
+        <ExpenseForm
+          expenseData={expenseData}
+          onSubmit={saveExpenseHandler}
+          onCancel={goBack}
+          mode={mode}
+        />
+        {mode === 'edit' && (
+          <GenericButton
+            style={{ marginTop: 10 }}
+            onPress={deleteExpenseHandler}
+            type='icon'
+          >
+            <Ionicons name='trash' size={40} color={COLORS.accent700} />
+          </GenericButton>
+        )}
+      </View>
+    </>
   );
 };
 
