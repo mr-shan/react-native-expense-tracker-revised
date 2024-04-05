@@ -12,6 +12,7 @@ interface IProps {
   children?: ReactNode;
   disabled?: boolean;
   style?: ViewStyle;
+  textStyle?: TextStyle;
   size?: 'small' | 'medium' | 'large'
   onPress: () => void;
 }
@@ -31,6 +32,7 @@ const GenericButton = (props: IProps) => {
     fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
+    ...props.textStyle
   };
 
   if (props.size === 'small') {

@@ -15,6 +15,8 @@ import { ExpenseProvider } from './store';
 
 import COLORS from './styles/colors';
 import { Dimensions, Platform } from 'react-native';
+import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
 
 const RootStack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -93,7 +95,24 @@ export default function App() {
             headerStyle: { backgroundColor: COLORS.bg500 },
             headerTintColor: COLORS.text700,
           }}
+          initialRouteName='SignUpScreen'
         >
+          <RootStack.Screen 
+            name="SignUpScreen"
+            component={SignUpScreen}
+            options={{
+              title: 'Sign Up',
+              headerTintColor: COLORS.text700
+            }}
+          />          
+          <RootStack.Screen 
+            name="LoginScreen"
+            component={LoginScreen}
+            options={{
+              title: 'Login',
+              headerTintColor: COLORS.text700
+            }}
+          />          
           <RootStack.Screen
             component={BottomTabsNavigation}
             name='TabsNavigation'
