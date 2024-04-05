@@ -14,6 +14,7 @@ import TabBarAddButton from './components/TabBarAddButton';
 import { ExpenseProvider } from './store';
 
 import COLORS from './styles/colors';
+import { Dimensions, Platform } from 'react-native';
 
 const RootStack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -25,11 +26,15 @@ const BottomTabsNavigation = () => {
         headerStyle: { backgroundColor: COLORS.bg300 },
         tabBarStyle: {
           backgroundColor: COLORS.bg300,
-          minHeight: 72,
+          minHeight: Dimensions.get('screen').width > 350 ? 64 : 90,
           borderTopColor: 'transparent',
+          paddingVertical: 2,
+          paddingBottom: Platform.OS === 'android' ? 4 : Dimensions.get('screen').width > 380 ? 16 : 4,
         },
         tabBarActiveTintColor: COLORS.text500,
-        tabBarLabelStyle: { fontSize: 12 },
+        tabBarLabelStyle: {
+          fontSize: 12,
+        },
         headerTintColor: COLORS.primary500,
       }}
     >
@@ -37,11 +42,11 @@ const BottomTabsNavigation = () => {
         component={RecentExpenseScreen}
         name='RecentExpenses'
         options={{
-          title: 'Recent Expenses',          
+          title: 'Recent',
           tabBarIcon: (props) => (
             <Ionicons
               name={props.focused ? 'timer' : 'timer-outline'}
-              size={props.size}
+              size={props.size + 8}
               color={props.color}
             />
           ),
@@ -68,7 +73,7 @@ const BottomTabsNavigation = () => {
           tabBarIcon: (props) => (
             <Ionicons
               name={props.focused ? 'wallet' : 'wallet-outline'}
-              size={props.size}
+              size={props.size + 8}
               color={props.color}
             />
           ),
@@ -102,7 +107,7 @@ export default function App() {
             options={{
               presentation: 'modal',
               headerStyle: { backgroundColor: COLORS.primary500 },
-              headerTintColor: COLORS.bg300
+              headerTintColor: COLORS.bg300,
             }}
           />
         </RootStack.Navigator>

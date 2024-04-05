@@ -1,5 +1,5 @@
 import { Pressable, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import COLORS from '../styles/colors';
 
 interface IProps {
@@ -29,11 +29,11 @@ const TabBarAddButton = (props: IProps) => {
           shadowOffset: { width: 0, height: 0 },
           shadowOpacity: 0.8,
           shadowRadius: 12,
-          elevation: 10,
+          elevation: 16,
         }}
         onPress={props.onPress}
       >
-        <Ionicons name='add' size={40} color={COLORS.bg300} />
+        <Feather name="plus" size={40} color={COLORS.bg300} />
       </Pressable>
     </View>
   );

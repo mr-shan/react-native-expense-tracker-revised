@@ -1,9 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import {
@@ -46,19 +41,17 @@ const AddExpenseScreen = (props: IProps) => {
       state.expenses.find((expense) => expense.id === expenseId) || null;
   }
 
-  useLayoutEffect(() => {
-    props.navigation.setOptions({
-      title: mode === 'edit' ? 'Manage Expense' : 'Add New Expense',
-    });
-  }, []);
-
   const goBack = () => {
     props.navigation.goBack();
   };
   const deleteExpenseHandler = async () => {
     setIsLoading(true);
     const response = await deleteExpense(expenseId);
-    if (response.isError) return;
+    if (response.isError) {
+      setIsError(true);
+      setIsLoading(false);
+      return;
+    };
     dispatch({ type: 'REMOVE_EXPENSE', payload: expenseId });
     goBack();
   };
@@ -91,6 +84,22 @@ const AddExpenseScreen = (props: IProps) => {
   const closeError = () => {
     setIsError(false);
   };
+  const deleteButton = () =>
+    mode === 'edit' && (
+      <GenericButton
+        onPress={deleteExpenseHandler}
+        type='icon'
+        style={{ right: -12 }}
+      >
+        <Ionicons name='trash' size={24} color={COLORS.accent500} />
+      </GenericButton>
+    );
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: mode === 'edit' ? 'Manage Expense' : 'Add New Expense',
+      headerRight: deleteButton,
+    });
+  }, []);
 
   return (
     <>
@@ -110,15 +119,6 @@ const AddExpenseScreen = (props: IProps) => {
             onCancel={goBack}
             mode={mode}
           />
-          {mode === 'edit' && (
-            <GenericButton
-              style={{ marginTop: 10 }}
-              onPress={deleteExpenseHandler}
-              type='icon'
-            >
-              <Ionicons name='trash' size={40} color={COLORS.accent700} />
-            </GenericButton>
-          )}
         </KeyboardAvoidingView>
       </ScrollView>
     </>

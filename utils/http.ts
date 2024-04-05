@@ -2,8 +2,8 @@ import axios from 'axios';
 import { IExpense } from '../types';
 
 const BASE_URL =
-  '';
-const DB_NAME = '';
+  'https://rn-expense-tracker-007-default-rtdb.asia-southeast1.firebasedatabase.app/';
+const DB_NAME = 'rn-expenses.json';
 
 export const fetchAllExpenses = async (): Promise<{
   isError: Boolean;
