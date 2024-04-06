@@ -23,8 +23,8 @@ const ExpenseList = (props: IProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 16,
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
   },
 });
 

@@ -3,8 +3,16 @@ import { createContext, useContext, useReducer, FC, ReactNode } from 'react';
 
 import { IExpense } from '../types';
 
+interface UserDetails {
+  email: string
+  expiresIn: string | number
+  idToken: string
+  refreshToken: string
+}
+
 interface State {
   expenses: IExpense[];
+  userDetails: UserDetails | null;
 }
 
 type Action =
@@ -12,9 +20,11 @@ type Action =
   | { type: 'REMOVE_EXPENSE'; payload: string }
   | { type: 'MODIFY_EXPENSE'; payload: IExpense }
   | { type: 'SET_EXPENSES'; payload: IExpense[] }
+  | { type: 'SET_USER_DETAILS'; payload: UserDetails }
 
 const initialState: State = {
-  expenses: []
+  expenses: [], 
+  userDetails: null,
 };
 
 const ExpenseContext = createContext<{ state: State; dispatch: React.Dispatch<Action> }>({
@@ -46,6 +56,11 @@ const expenseReducer = (state: State, action: Action): State => {
       return {
         ...state,
         expenses: action.payload,
+      }
+    case 'SET_USER_DETAILS':
+      return {
+        ...state,
+        userDetails: action.payload
       }
 
     default:
