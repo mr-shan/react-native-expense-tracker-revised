@@ -51,14 +51,17 @@ const AddExpenseScreen = (props: IProps) => {
       setIsError(true);
       setIsLoading(false);
       return;
-    };
+    }
     dispatch({ type: 'REMOVE_EXPENSE', payload: expenseId });
     goBack();
   };
   const saveExpenseHandler = async (expenseData: IExpense) => {
     setIsLoading(true);
     if (mode === 'new') {
-      const response = await postNewExpense(expenseData);
+      const response = await postNewExpense(
+        expenseData,
+        state.userDetails?.idToken
+      );
       console.log(response);
       if (response.isError || !response.id) {
         setIsError(true);
@@ -70,7 +73,11 @@ const AddExpenseScreen = (props: IProps) => {
         payload: { ...expenseData, id: response.id },
       });
     } else {
-      const response = await modifyExistingExpense(expenseData.id, expenseData);
+      const response = await modifyExistingExpense(
+        expenseData.id,
+        expenseData,
+        state.userDetails?.idToken
+      );
       if (response.isError) {
         setIsError(true);
         setIsLoading(false);

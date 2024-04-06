@@ -4,10 +4,10 @@ import { createContext, useContext, useReducer, FC, ReactNode } from 'react';
 import { IExpense } from '../types';
 
 interface UserDetails {
-  email: string
-  expiresIn: string | number
-  idToken: string
-  refreshToken: string
+  email: string;
+  expiresIn: string | number;
+  idToken: string;
+  refreshToken: string;
 }
 
 interface State {
@@ -21,15 +21,19 @@ type Action =
   | { type: 'MODIFY_EXPENSE'; payload: IExpense }
   | { type: 'SET_EXPENSES'; payload: IExpense[] }
   | { type: 'SET_USER_DETAILS'; payload: UserDetails }
+  | { type: 'LOG_OUT' };
 
 const initialState: State = {
-  expenses: [], 
+  expenses: [],
   userDetails: null,
 };
 
-const ExpenseContext = createContext<{ state: State; dispatch: React.Dispatch<Action> }>({
+const ExpenseContext = createContext<{
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}>({
   state: initialState,
-  dispatch: () => null
+  dispatch: () => null,
 });
 
 const expenseReducer = (state: State, action: Action): State => {
@@ -37,31 +41,43 @@ const expenseReducer = (state: State, action: Action): State => {
     case 'ADD_EXPENSE':
       return {
         ...state,
-        expenses: [...state.expenses, action.payload]
+        expenses: [...state.expenses, action.payload],
       };
     case 'REMOVE_EXPENSE':
       return {
         ...state,
-        expenses: state.expenses.filter(expense => expense.id !== action.payload)
+        expenses: state.expenses.filter(
+          (expense) => expense.id !== action.payload
+        ),
       };
     case 'MODIFY_EXPENSE':
-      const oldStateExpenses = [ ...state.expenses ];
-      const index = oldStateExpenses.findIndex(item => item.id === action.payload.id);
-      oldStateExpenses[index] = { ...oldStateExpenses[index], ...action.payload };
+      const oldStateExpenses = [...state.expenses];
+      const index = oldStateExpenses.findIndex(
+        (item) => item.id === action.payload.id
+      );
+      oldStateExpenses[index] = {
+        ...oldStateExpenses[index],
+        ...action.payload,
+      };
       return {
         ...state,
-        expenses: oldStateExpenses
-      }
+        expenses: oldStateExpenses,
+      };
     case 'SET_EXPENSES':
       return {
         ...state,
         expenses: action.payload,
-      }
+      };
     case 'SET_USER_DETAILS':
       return {
         ...state,
-        userDetails: action.payload
-      }
+        userDetails: action.payload,
+      };
+    case 'LOG_OUT':
+      return {
+        ...state,
+        userDetails: null,
+      };
 
     default:
       return state;
@@ -69,7 +85,7 @@ const expenseReducer = (state: State, action: Action): State => {
 };
 
 interface IProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export const ExpenseProvider = (props: IProps) => {

@@ -200,7 +200,6 @@ const SignUpScreen = (props: IProps) => {
             </View>
           </KeyboardAvoidingView>
         </ScrollView>
-        {isLoading && <LoadingOverlay />}
       </View>
     </>
   );

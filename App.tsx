@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import RecentExpenseScreen from './screens/RecentExpenseScreen';
 import AllExpenseScreen from './screens/AllExpenseScreen';
@@ -11,17 +12,31 @@ import AddExpenseScreen from './screens/AddExpenseScreen';
 
 import TabBarAddButton from './components/TabBarAddButton';
 
-import { ExpenseProvider } from './store';
+import { ExpenseProvider, useExpense } from './store';
 
 import COLORS from './styles/colors';
 import { Dimensions, Platform } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
+import GenericButton from './components/GenericButton';
 
 const RootStack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
 const BottomTabsNavigation = () => {
+  const { dispatch } = useExpense();
+
+  const logoutButton = () => (
+    <GenericButton
+      onPress={() => dispatch({ type: 'LOG_OUT' })}
+      type='icon'
+      style={{ right: -5 }}
+    >
+      <MaterialIcons name='logout' size={24} color={COLORS.text200} />
+    </GenericButton>
+  );
+
   return (
     <BottomTabs.Navigator
       screenOptions={{
@@ -31,13 +46,19 @@ const BottomTabsNavigation = () => {
           minHeight: Dimensions.get('screen').width > 350 ? 64 : 90,
           borderTopColor: 'transparent',
           paddingVertical: 2,
-          paddingBottom: Platform.OS === 'android' ? 4 : Dimensions.get('screen').width > 380 ? 16 : 4,
+          paddingBottom:
+            Platform.OS === 'android'
+              ? 4
+              : Dimensions.get('screen').width > 380
+              ? 16
+              : 4,
         },
         tabBarActiveTintColor: COLORS.text500,
         tabBarLabelStyle: {
           fontSize: 12,
         },
         headerTintColor: COLORS.primary500,
+        headerRight: logoutButton,
       }}
     >
       <BottomTabs.Screen
@@ -85,51 +106,77 @@ const BottomTabsNavigation = () => {
   );
 };
 
+const AuthNavigator = () => {
+  return (
+    <AuthStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: COLORS.primary500 },
+        headerTintColor: COLORS.bg300,
+      }}
+      initialRouteName='LoginScreen'
+    >
+      <AuthStack.Screen
+        name='SignUpScreen'
+        component={SignUpScreen}
+        options={{
+          title: 'Sign Up',
+        }}
+      />
+      <AuthStack.Screen
+        name='LoginScreen'
+        component={LoginScreen}
+        options={{
+          title: 'Login',
+        }}
+      />
+    </AuthStack.Navigator>
+  );
+};
+
+const ProtectedScreens = () => {
+  return (
+    <RootStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: COLORS.bg500 },
+        headerTintColor: COLORS.text700,
+      }}
+      initialRouteName='SignUpScreen'
+    >
+      <RootStack.Screen
+        component={BottomTabsNavigation}
+        name='TabsNavigation'
+        options={{
+          headerShown: false,
+        }}
+      />
+      <RootStack.Screen
+        component={AddExpenseScreen}
+        name='AddExpense'
+        options={{
+          presentation: 'modal',
+          headerStyle: { backgroundColor: COLORS.primary500 },
+          headerTintColor: COLORS.bg300,
+        }}
+      />
+    </RootStack.Navigator>
+  );
+};
+
+const Navigation = () => {
+  const { state } = useExpense();
+
+  if (state.userDetails?.idToken) {
+    return <ProtectedScreens />;
+  }
+  return <AuthNavigator />;
+};
+
 export default function App() {
   return (
     <ExpenseProvider>
       <StatusBar style='light' />
       <NavigationContainer>
-        <RootStack.Navigator
-          screenOptions={{
-            headerStyle: { backgroundColor: COLORS.bg500 },
-            headerTintColor: COLORS.text700,
-          }}
-          initialRouteName='SignUpScreen'
-        >
-          <RootStack.Screen 
-            name="SignUpScreen"
-            component={SignUpScreen}
-            options={{
-              title: 'Sign Up',
-              headerTintColor: COLORS.text700
-            }}
-          />          
-          <RootStack.Screen 
-            name="LoginScreen"
-            component={LoginScreen}
-            options={{
-              title: 'Login',
-              headerTintColor: COLORS.text700
-            }}
-          />          
-          <RootStack.Screen
-            component={BottomTabsNavigation}
-            name='TabsNavigation'
-            options={{
-              headerShown: false,
-            }}
-          />
-          <RootStack.Screen
-            component={AddExpenseScreen}
-            name='AddExpense'
-            options={{
-              presentation: 'modal',
-              headerStyle: { backgroundColor: COLORS.primary500 },
-              headerTintColor: COLORS.bg300,
-            }}
-          />
-        </RootStack.Navigator>
+        <Navigation />
       </NavigationContainer>
     </ExpenseProvider>
   );

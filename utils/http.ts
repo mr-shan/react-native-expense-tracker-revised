@@ -5,13 +5,15 @@ const BASE_URL =
   '';
 const DB_NAME = '';
 
-export const fetchAllExpenses = async (): Promise<{
+export const fetchAllExpenses = async (
+  token: any
+): Promise<{
   isError: Boolean;
   expenses: IExpense[] | null;
 }> => {
   try {
     console.log('Fetching expenses');
-    const response = await axios.get(BASE_URL + '/' + DB_NAME);
+    const response = await axios.get(`${BASE_URL}/${DB_NAME}?auth=${token}`);
     const expenses = [] as IExpense[];
     for (let key in response.data) {
       expenses.push({
@@ -30,15 +32,20 @@ export const fetchAllExpenses = async (): Promise<{
 };
 
 export const postNewExpense = async (
-  expense: IExpense
+  expense: IExpense,
+  token: any
 ): Promise<{
   isError: Boolean;
   id: string | null;
 }> => {
   try {
     const payload = { ...expense, id: null };
-    const response = await axios.post(BASE_URL + '/' + DB_NAME, payload);
-    if (response.status !== 200) throw new Error(response.data || response.statusText)
+    const response = await axios.post(
+      `${BASE_URL}/${DB_NAME}?auth=${token}`,
+      payload
+    );
+    if (response.status !== 200)
+      throw new Error(response.data || response.statusText);
     return { isError: false, id: response.data.name };
   } catch (error) {
     console.error(error);
@@ -48,12 +55,13 @@ export const postNewExpense = async (
 
 export const modifyExistingExpense = async (
   id: string,
-  expenseData: IExpense
+  expenseData: IExpense,
+  token: any
 ): Promise<{ isError: boolean; data: any }> => {
   try {
     const payload = { ...expenseData, id: null };
     const response = await axios.put(
-      BASE_URL + '/rn-expenses/' + id + '.json',
+      `${BASE_URL}/rn-expenses/${id}.json?auth=${token}`,
       payload
     );
     return { isError: false, data: response.data };
@@ -67,7 +75,9 @@ export const deleteExpense = async (
   id: string
 ): Promise<{ isError: boolean; data: any }> => {
   try {
-    const response = await axios.delete(BASE_URL + '/rn-expenses/' + id + '.json');
+    const response = await axios.delete(
+      BASE_URL + '/rn-expenses/' + id + '.json'
+    );
     return { isError: false, data: response.data };
   } catch (error) {
     console.error(error);

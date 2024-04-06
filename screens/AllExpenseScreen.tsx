@@ -42,7 +42,7 @@ const AllExpenseScreen = (props: IProps) => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const res = await fetchAllExpenses();
+        const res = await fetchAllExpenses(state.userDetails?.idToken);
         if (res.isError || !res.expenses) {
           setIsError(true);
           setIsLoading(false);
