@@ -92,7 +92,6 @@ const LoginScreen = (props: IProps) => {
           refreshToken: signUpData.refreshToken,
         },
       });
-      props.navigation.replace('TabsNavigation');
     }
   };
 

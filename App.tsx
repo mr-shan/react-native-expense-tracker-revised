@@ -19,6 +19,12 @@ import { Dimensions, Platform } from 'react-native';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import GenericButton from './components/GenericButton';
+import { useEffect, ReactNode, useState } from 'react';
+import asyncStore from './store/asyncStore';
+
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -163,15 +169,33 @@ const ProtectedScreens = () => {
 };
 
 const Navigation = () => {
-  const { state } = useExpense();
+  const { state, dispatch } = useExpense();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const userDetails = await asyncStore.get('user-details', true);
+        dispatch({ type: 'SET_USER_DETAILS', payload: userDetails });
+      } catch (error) {
+        console.error('Failed to get user details, from async store', error);
+      } finally {
+        setTimeout(() => {
+          SplashScreen.hideAsync();
+        }, 100);
+      }
+    };
+    checkAuth();
+  }, []);
 
   if (state.userDetails?.idToken) {
     return <ProtectedScreens />;
   }
+
   return <AuthNavigator />;
 };
 
 export default function App() {
+  SplashScreen.preventAutoHideAsync();
   return (
     <ExpenseProvider>
       <StatusBar style='light' />

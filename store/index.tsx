@@ -2,6 +2,7 @@
 import { createContext, useContext, useReducer, FC, ReactNode } from 'react';
 
 import { IExpense } from '../types';
+import asyncStore from './asyncStore';
 
 interface UserDetails {
   email: string;
@@ -69,11 +70,13 @@ const expenseReducer = (state: State, action: Action): State => {
         expenses: action.payload,
       };
     case 'SET_USER_DETAILS':
+      asyncStore.set('user-details', action.payload);
       return {
         ...state,
         userDetails: action.payload,
       };
     case 'LOG_OUT':
+      asyncStore.remove('user-details');
       return {
         ...state,
         userDetails: null,

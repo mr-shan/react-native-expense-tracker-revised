@@ -62,7 +62,6 @@ const AddExpenseScreen = (props: IProps) => {
         expenseData,
         state.userDetails?.idToken
       );
-      console.log(response);
       if (response.isError || !response.id) {
         setIsError(true);
         setIsLoading(false);

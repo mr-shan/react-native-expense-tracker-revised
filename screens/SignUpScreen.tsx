@@ -116,7 +116,6 @@ const SignUpScreen = (props: IProps) => {
           refreshToken: signUpData.refreshToken,
         },
       });
-      props.navigation.replace('TabsNavigation');
     }
   };
 
